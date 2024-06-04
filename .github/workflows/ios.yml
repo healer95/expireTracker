@@ -1,0 +1,42 @@
+name: Build and Deploy iOS App
+
+on:
+  push:
+    branches:
+      - main  # или ветка, которую вы используете
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'  # используемая версия .NET
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build the project
+      run: dotnet build --configuration Release
+
+    - name: Run tests
+      run: dotnet test --configuration Release
+
+    - name: Prepare for deployment
+      id: prepare
+      run: |
+        mkdir output
+        cp -r YourAppName/bin/Release/net6.0-ios/publish/* output/
+
+    - name: Deploy to App Center
+      uses: jamesmontemagno/appcenter-deploy@v1
+      with:
+        appcenter_app_name: 'YourAppName/ios'
+        appcenter_token: ${{ secrets.APPCENTER_TOKEN }}
+        appcenter_owner_name: 'YourAppOwnerName'
+        appcenter_path: 'output'
