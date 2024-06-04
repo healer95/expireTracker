@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MauiApp1"
+             x:Class="MauiApp1.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:NullableStringToBoolConverter x:Key="NullableStringToBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout Padding="20">
+        <!-- Ввод данных для нового продукта -->
+        <Entry x:Name="ProductEntry" Placeholder="Product" />
+        <Entry x:Name="LocationEntry" Placeholder="Location (Optional)" />
+        <DatePicker x:Name="ExpiryDatePicker" />
+        <Button Text="Save Product" Clicked="OnSaveProductClicked" />
+
+        <!-- Поле для фильтрации по локации -->
+        <Entry x:Name="FilterLocationEntry" Placeholder="Filter by Location" TextChanged="OnFilterLocationTextChanged" />
+
+        <!-- Список продуктов с прокруткой -->
+        <ScrollView Orientation="Both">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Заголовки столбцов -->
+                <Label Text="Name" FontAttributes="Bold" HorizontalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSortByNameTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Text="Location" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSortByLocationTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Text="Expiry Date" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="2">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSortByDateTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Text="Actions" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="3" />
+
+                <!-- Данные продуктов -->
+                <CollectionView x:Name="ProductsCollectionView" Grid.Row="1" Grid.ColumnSpan="4" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="1" BackgroundColor="Transparent">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Frame BorderColor="Gray" Padding="5">
+                                    <Label Text="{Binding Name}" VerticalOptions="Center" />
+                                </Frame>
+                                <Frame BorderColor="Gray" Padding="5" Grid.Column="1">
+                                    <Label Text="{Binding Location}" VerticalOptions="Center" IsVisible="{Binding Location, Converter={StaticResource NullableStringToBoolConverter}}" />
+                                </Frame>
+                                <Frame BorderColor="Gray" Padding="5" Grid.Column="2">
+                                    <Label Text="{Binding ExpiryDate, StringFormat='{0:d}'}" VerticalOptions="Center" />
+                                </Frame>
+                                <Frame BorderColor="Gray" Padding="5" Grid.Column="3">
+                                    <StackLayout Orientation="Horizontal">
+                                        <Button Text="Edit" Clicked="OnEditProductClicked" />
+                                        <Button Text="Delete" Clicked="OnDeleteProductClicked" />
+                                    </StackLayout>
+                                </Frame>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </ScrollView>
+
+        <!-- Секция редактирования -->
+        <StackLayout x:Name="EditSection" IsVisible="False">
+            <Entry x:Name="EditProductEntry" Placeholder="Edit Product" />
+            <Entry x:Name="EditLocationEntry" Placeholder="Edit Location (Optional)" />
+            <DatePicker x:Name="EditExpiryDatePicker" />
+            <Button Text="Save Changes" Clicked="OnSaveChangesClicked" />
+            <Button Text="Cancel" Clicked="OnCancelEditClicked" />
+        </StackLayout>
+
+        <!-- Секция для работы с хеш-строкой -->
+        <StackLayout>
+            <Entry x:Name="HashStringEntry" Placeholder="Enter Hash String" TextChanged="OnHashStringEntryTextChanged" />
+            <Label x:Name="HashErrorLabel" Text="Invalid Hash String" TextColor="Red" IsVisible="False"/>
+        </StackLayout>
+    </StackLayout>
+</ContentPage>
